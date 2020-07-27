@@ -1,6 +1,7 @@
 import { createServer } from 'http'
 import { parse } from 'url'
 import next from 'next'
+import heapdump from 'heapdump';
 
 const port = parseInt(process.env.PORT || '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
@@ -16,6 +17,14 @@ app.prepare().then(() => {
       app.render(req, res, '/a', query)
     } else if (pathname === '/b') {
       app.render(req, res, '/b', query)
+    } else if (pathname === '/___heapdump') {
+      heapdump.writeSnapshot((_err, filename: string | undefined) => {
+        console.log('dump written to', filename);
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.write('OK');
+        res.end();
+      });
+      return true;
     } else {
       handle(req, res, parsedUrl)
     }
