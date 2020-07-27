@@ -1,29 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SplitFactory, useClient } from '@splitsoftware/splitio-react';
 import { NextPage } from 'next';
 
 const unmountSplitClient = (client: SplitIO.IClient | null) => {
   if (client) {
     client.destroy();
-  }
-}
-
-// Need a class to implement componentWillUnmount
-class ServerSplitDestroyer extends React.Component {
-  private client: SplitIO.IClient;
-
-  constructor(props: { client: SplitIO.IClient }) {
-    super(props);
-    this.client = props.client;
-  }
-
-  // server-side unmount
-  componentWillUnmount() {
-    unmountSplitClient(this.client);
-  }
-
-  render() {
-    return (<></>)
   }
 }
 
@@ -35,7 +16,7 @@ const ClientDestroyer: NextPage<Props> = ({ splitioKey, children }) => {
   const client = useClient(splitioKey);
 
   // client-side unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return function _unmountSplitClient() {
       unmountSplitClient(client);
     }
@@ -43,7 +24,6 @@ const ClientDestroyer: NextPage<Props> = ({ splitioKey, children }) => {
 
   return (
     <>
-    <ServerSplitDestroyer />
     {children}
     </>
   );
